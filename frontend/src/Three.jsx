@@ -60,12 +60,25 @@ function Three() {
         const ambient_light = new THREE.AmbientLight(0xA3A3A3, 0.3)
         scene.add(ambient_light)
 
-        gltf_loader.load("/assets/kitchen_table.glb", function (glb) {
+        // gltf_loader.load("/assets/kitchen_table.glb", function (glb) {
+        //     const model = glb.scene
+        //     scene.add(model)
+        //     model.rotateY(Math.PI / 2)
+        //     model.scale.set(0.35, 0.35, 0.35)
+        //     model.position.set(0.25, 0, 0)
+
+        //     model.traverse(function (node) {
+        //         if (node.isMesh)
+        //             node.receiveShadow = true
+        //     })
+        // })
+
+        gltf_loader.load("/assets/table.glb", function (glb) {
             const model = glb.scene
             scene.add(model)
-            model.rotateY(Math.PI / 2)
-            model.scale.set(0.35, 0.35, 0.35)
-            model.position.set(0.25, 0, 0)
+            // model.rotateY(Math.PI / 2)
+            // model.scale.set(0.35, 0.35, 0.35)
+            // model.position.set(0.25, 0, 0)
 
             model.traverse(function (node) {
                 if (node.isMesh)
@@ -84,34 +97,34 @@ function Three() {
             scene.add(card)
         })
 
-        window.addEventListener("mousemove", function (e) {
-            mouse_position.x = (e.clientX / this.window.innerWidth) * 2 - 1
-            mouse_position.y = -(e.clientY / this.window.innerHeight) * 2 + 1
+        // window.addEventListener("mousemove", function (e) {
+        //     mouse_position.x = (e.clientX / this.window.innerWidth) * 2 - 1
+        //     mouse_position.y = -(e.clientY / this.window.innerHeight) * 2 + 1
 
-            raycaster.setFromCamera(mouse_position, camera)
+        //     raycaster.setFromCamera(mouse_position, camera)
 
-            const intersects = raycaster.intersectObject(scene)
+        //     const intersects = raycaster.intersectObject(scene)
 
 
-            if (intersects.length > 0) {
-                const tl = new gsap.timeline({
-                    defaults: { duration: 0.2, delay: 0.1 }
-                })
+        //     if (intersects.length > 0) {
+        //         const tl = new gsap.timeline({
+        //             defaults: { duration: 0.2, delay: 0.1 }
+        //         })
 
-                if (intersects[0].object.name.includes("playerCard")) {
-                    hovered_card = intersects[0].object;
-                    console.log("hovered");
+        //         if (intersects[0].object.name.includes("playerCard")) {
+        //             hovered_card = intersects[0].object;
+        //             console.log("hovered");
 
-                    tl.to(hovered_card.position, {
-                        y: 6.8 + 0.1,
-                    }, 0)
-                } else {
-                    tl.to(hovered_card.position, {
-                        y: 6.8,
-                    }, 0)
-                }
-            }
-        })
+        //             tl.to(hovered_card.position, {
+        //                 y: 6.8 + 0.1,
+        //             }, 0)
+        //         } else {
+        //             tl.to(hovered_card.position, {
+        //                 y: 6.8,
+        //             }, 0)
+        //         }
+        //     }
+        // })
 
         window.addEventListener("click", function (e) {
             mouse_position.x = (e.clientX / this.window.innerWidth) * 2 - 1
@@ -131,9 +144,9 @@ function Three() {
                     })
 
                     tl.to(hovered_card.position, {
-                        y: 3.18,
-                        z: 0.9,
-                        x: -2
+                        y: 3.22,
+                        z: 0,
+                        x: 0
                     }, 0)
                         .to(hovered_card.rotation, {
                             x: -Math.PI / 2,
