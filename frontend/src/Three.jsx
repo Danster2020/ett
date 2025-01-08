@@ -40,8 +40,8 @@ function Three() {
         );
 
         // Sets orbit control to move the camera around.
-        // const orbit = new OrbitControls(camera, renderer.domElement);
-        // orbit.update();
+        const orbit = new OrbitControls(camera, renderer.domElement);
+        orbit.update();
 
         // Camera positioning.
         camera.position.set(0, 10, 6);
@@ -94,9 +94,21 @@ function Three() {
 
 
             if (intersects.length > 0) {
+                const tl = new gsap.timeline({
+                    defaults: { duration: 0.2, delay: 0.1 }
+                })
+
                 if (intersects[0].object.name.includes("playerCard")) {
                     hovered_card = intersects[0].object;
                     console.log("hovered");
+
+                    tl.to(hovered_card.position, {
+                        y: 6.8 + 0.1,
+                    }, 0)
+                } else {
+                    tl.to(hovered_card.position, {
+                        y: 6.8,
+                    }, 0)
                 }
             }
         })
@@ -126,7 +138,7 @@ function Three() {
                         .to(hovered_card.rotation, {
                             x: -Math.PI / 2,
                             y: 0,
-                            z: 0
+                            z: Math.random()
                         }, 0)
                         .to(hovered_card.scale, {
                             y: 1.5,
