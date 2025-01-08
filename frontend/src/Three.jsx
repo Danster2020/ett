@@ -2,7 +2,9 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { useEffect, useRef } from "react";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader"
-import { CARDS } from './cards';
+import { CARDS, card_texture_cover } from './cards';
+import gsap from "gsap"
+
 
 function Three() {
     const refContainer = useRef(null);
@@ -20,6 +22,10 @@ function Three() {
         // var cube = new THREE.Mesh(geometry, material);
         // scene.add(cube);
 
+        let hovered_card
+        const mouse_position = new THREE.Vector2()
+        const raycaster = new THREE.Raycaster()
+
         renderer.setClearColor(0xFEFEFE);
         renderer.shadowMap.enabled = true
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -34,7 +40,7 @@ function Three() {
         );
 
         // Sets orbit control to move the camera around.
-        const orbit = new OrbitControls(camera, renderer.domElement);
+        // const orbit = new OrbitControls(camera, renderer.domElement);
         // orbit.update();
 
         // Camera positioning.
@@ -76,6 +82,61 @@ function Three() {
 
         CARDS.forEach(function (card) {
             scene.add(card)
+        })
+
+        window.addEventListener("mousemove", function (e) {
+            mouse_position.x = (e.clientX / this.window.innerWidth) * 2 - 1
+            mouse_position.y = -(e.clientY / this.window.innerHeight) * 2 + 1
+
+            raycaster.setFromCamera(mouse_position, camera)
+
+            const intersects = raycaster.intersectObject(scene)
+
+
+            if (intersects.length > 0) {
+                if (intersects[0].object.name.includes("playerCard")) {
+                    hovered_card = intersects[0].object;
+                    console.log("hovered");
+                }
+            }
+        })
+
+        window.addEventListener("click", function (e) {
+            mouse_position.x = (e.clientX / this.window.innerWidth) * 2 - 1
+            mouse_position.y = -(e.clientY / this.window.innerHeight) * 2 + 1
+
+            raycaster.setFromCamera(mouse_position, camera)
+
+            const intersects = raycaster.intersectObject(scene)
+
+
+            if (intersects.length > 0) {
+                if (intersects[0].object.name.includes("playerCard")) {
+                    hovered_card = intersects[0].object
+
+                    const tl = new gsap.timeline({
+                        defaults: { duration: 0.4, delay: 0.1 }
+                    })
+
+                    tl.to(hovered_card.position, {
+                        y: 3.18,
+                        z: 0.9,
+                        x: -2
+                    }, 0)
+                        .to(hovered_card.rotation, {
+                            x: -Math.PI / 2,
+                            y: 0,
+                            z: 0
+                        }, 0)
+                        .to(hovered_card.scale, {
+                            y: 1.5,
+                            z: 1.5,
+                            x: 1.5
+                        }, 0)
+                }
+            }
+
+
         })
 
         // Creates an axes helper with an axis length of 4.

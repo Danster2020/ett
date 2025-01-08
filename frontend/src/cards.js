@@ -33,10 +33,13 @@ const z_vec = 4.21
 
 for (let i = 1; i < 5; i++) {
     let card = new Mesh(card_geo, card_1_mat)
+    card.name = "playerCard"
     card.position.set(x_vec - (i * 0.25), y_vec - (i * 0.01), z_vec - (i * 0.01))
     card.rotation.set(-0.7, 0, 0)
     card.castShadow = true;
+    // console.log(card.material[4].map = card_texture_cover);
+
     CARDS.push(card)
 }
 
-export { CARDS }
+export { CARDS, card_texture_cover }
