@@ -5,41 +5,67 @@ import {
     SRGBColorSpace,
     TextureLoader,
     Vector3,
-} from "three"
+} from "three";
 
-const texture_loader = new TextureLoader
-const card_geo = new BoxGeometry(0.4, 0.6, 0.001)
+class Card {
+    static cardGeometry = new BoxGeometry(0.4, 0.6, 0.001);
+    static textureLoader = new TextureLoader();
+    static backTexture = Card.textureLoader.load("/assets/card_cover.png");
 
-const card_texture_cover = texture_loader.load("/assets/card_cover.png")
-card_texture_cover.colorSpace = SRGBColorSpace
+    constructor(texturePath, position = [0, 0, 0], rotation = [-0.7, 0, 0], name = "playerCard") {
+        // Load textures
+        const cardFrontTexture = Card.textureLoader.load(texturePath);
+        cardFrontTexture.colorSpace = SRGBColorSpace;
 
-const card_texture_1 = texture_loader.load("/assets/king.png")
-card_texture_1.colorSpace = SRGBColorSpace
+        // Ensure the back texture also uses the correct color space
+        Card.backTexture.colorSpace = SRGBColorSpace;
 
-const card_1_mat = [
-    new MeshBasicMaterial(),
-    new MeshBasicMaterial(),
-    new MeshBasicMaterial(),
-    new MeshBasicMaterial(),
-    new MeshBasicMaterial({ map: card_texture_1 }), // face of card
-    new MeshBasicMaterial({ map: card_texture_cover }), // back of card
-]
+        // Create materials
+        const materials = [
+            new MeshBasicMaterial(), // Left side
+            new MeshBasicMaterial(), // Right side
+            new MeshBasicMaterial(), // Top side
+            new MeshBasicMaterial(), // Bottom side
+            new MeshBasicMaterial({ map: cardFrontTexture }), // Front face
+            new MeshBasicMaterial({ map: Card.backTexture }), // Back face
+        ];
 
-const CARDS = []
+        // Create mesh
+        this.mesh = new Mesh(Card.cardGeometry, materials);
+        this.mesh.name = name;
 
-const x_vec = 0.5
-const y_vec = 6.8
-const z_vec = 4.21
+        // Set position and rotation
+        if (position instanceof Vector3) {
+            this.mesh.position.copy(position);
+        } else if (Array.isArray(position)) {
+            this.mesh.position.set(...position);
+        }
 
-for (let i = 1; i < 5; i++) {
-    let card = new Mesh(card_geo, card_1_mat)
-    card.name = "playerCard"
-    card.position.set(x_vec - (i * 0.25), y_vec - (i * 0.01), z_vec - (i * 0.01))
-    card.rotation.set(-0.7, 0, 0)
-    card.castShadow = true;
-    // console.log(card.material[4].map = card_texture_cover);
+        if (rotation instanceof Vector3) {
+            this.mesh.rotation.copy(rotation);
+        } else if (Array.isArray(rotation)) {
+            this.mesh.rotation.set(...rotation);
+        }
 
-    CARDS.push(card)
+        this.mesh.castShadow = true;
+    }
+
+    getMesh() {
+        return this.mesh;
+    }
 }
 
-export { CARDS, card_texture_cover }
+// Example usage
+// const CARDS = [];
+// const xVec = -0.25;
+// const yVec = 6.8;
+// const zVec = 4.21;
+
+// for (let i = 1; i < 5; i++) {
+//     const position = [xVec + i * 0.25, yVec + i * 0.01, zVec + i * 0.01];
+//     const rotation = [-0.7, 0, 0];
+//     const card = new Card("/assets/king.png", position, rotation);
+//     CARDS.push(card.getMesh());
+// }
+
+export { Card };

@@ -2,12 +2,17 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { useEffect, useRef } from "react";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader"
-import { CARDS, card_texture_cover } from './cards';
+import { Card } from './cards';
 import gsap from "gsap"
 
 
 function Three() {
+
     const refContainer = useRef(null);
+    var scene = new THREE.Scene();
+    const CARDS = []
+    let nrOfCardsOnTable = 0
+
     useEffect(() => {
 
         const gltf_loader = new GLTFLoader()
@@ -30,7 +35,6 @@ function Three() {
         renderer.shadowMap.enabled = true
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
 
-        var scene = new THREE.Scene();
 
         const camera = new THREE.PerspectiveCamera(
             45,
@@ -40,8 +44,8 @@ function Three() {
         );
 
         // Sets orbit control to move the camera around.
-        const orbit = new OrbitControls(camera, renderer.domElement);
-        orbit.update();
+        // const orbit = new OrbitControls(camera, renderer.domElement);
+        // orbit.update();
 
         // Camera positioning.
         camera.position.set(0, 10, 6);
@@ -98,33 +102,61 @@ function Three() {
         })
 
         // window.addEventListener("mousemove", function (e) {
-        //     mouse_position.x = (e.clientX / this.window.innerWidth) * 2 - 1
-        //     mouse_position.y = -(e.clientY / this.window.innerHeight) * 2 + 1
+        //     mouse_position.x = (e.clientX / this.window.innerWidth) * 2 - 1;
+        //     mouse_position.y = -(e.clientY / this.window.innerHeight) * 2 + 1;
 
-        //     raycaster.setFromCamera(mouse_position, camera)
+        //     raycaster.setFromCamera(mouse_position, camera);
 
-        //     const intersects = raycaster.intersectObject(scene)
+        //     const intersects = raycaster.intersectObjects(scene.children); // Corrected to check all objects in the scene
 
-
-        //     if (intersects.length > 0) {
-        //         const tl = new gsap.timeline({
-        //             defaults: { duration: 0.2, delay: 0.1 }
-        //         })
-
-        //         if (intersects[0].object.name.includes("playerCard")) {
-        //             hovered_card = intersects[0].object;
-        //             console.log("hovered");
-
-        //             tl.to(hovered_card.position, {
-        //                 y: 6.8 + 0.1,
-        //             }, 0)
-        //         } else {
-        //             tl.to(hovered_card.position, {
-        //                 y: 6.8,
-        //             }, 0)
+        //     const cardId = intersects[0].object.id
+        //     let originalY = 0
+        //     CARDS.forEach((card, index) => {
+        //         if (card.id === cardId) {
+        //             originalY = 6.8 + 0.01 * index
         //         }
+        //     });
+
+
+        //     if (intersects.length > 0 && intersects[0].object.name.includes("playerCard")) {
+
+
+
+        //         const tl = new gsap.timeline({
+        //             defaults: { duration: 0.2, delay: 0.1 },
+        //         });
+
+        //         const currentCard = intersects[0].object;
+
+        //         if (hovered_card !== currentCard) {
+        //             // Reset previously hovered card
+        //             if (hovered_card) {
+        //                 tl.to(hovered_card.position, {
+        //                     y: originalY, // Reset to its original position
+        //                 }, 0);
+        //             }
+
+        //             // Update hovered_card
+        //             hovered_card = currentCard;
+
+        //             // Animate the current hovered card
+        //             tl.to(hovered_card.position, {
+        //                 y: hovered_card.position.y + 0.1,
+        //             }, 0);
+        //         }
+        //     } else if (hovered_card) {
+        //         // Reset the previously hovered card when no cards are hovered
+        //         const tl = new gsap.timeline({
+        //             defaults: { duration: 0.2, delay: 0.1 },
+        //         });
+
+        //         tl.to(hovered_card.position, {
+        //             y: originalY, // Reset to its original position
+        //         }, 0);
+
+        //         hovered_card = null; // Clear the hovered card
         //     }
-        // })
+        // });
 
         window.addEventListener("click", function (e) {
             mouse_position.x = (e.clientX / this.window.innerWidth) * 2 - 1
@@ -139,14 +171,22 @@ function Three() {
                 if (intersects[0].object.name.includes("playerCard")) {
                     hovered_card = intersects[0].object
 
+                    const cardId = intersects[0].object.id
+                    CARDS.forEach((card, index) => {
+                        if (card.id === cardId) {
+                            CARDS.splice(index, 1)
+                            nrOfCardsOnTable++
+                        }
+                    })
+
                     const tl = new gsap.timeline({
                         defaults: { duration: 0.4, delay: 0.1 }
                     })
 
                     tl.to(hovered_card.position, {
-                        y: 3.22,
-                        z: 0,
-                        x: 0
+                        x: 0,
+                        y: 3.22 + nrOfCardsOnTable * 0.001,
+                        z: 0
                     }, 0)
                         .to(hovered_card.rotation, {
                             x: -Math.PI / 2,
@@ -154,15 +194,20 @@ function Three() {
                             z: Math.random()
                         }, 0)
                         .to(hovered_card.scale, {
+                            x: 1.5,
                             y: 1.5,
-                            z: 1.5,
-                            x: 1.5
+                            z: 1.5
                         }, 0)
+
+                    handleCardHandUpdate()
                 }
             }
 
 
         })
+
+
+
 
         // Creates an axes helper with an axis length of 4.
         // const axesHelper = new THREE.AxesHelper(4);
@@ -175,8 +220,63 @@ function Three() {
         renderer.setAnimationLoop(animate);
 
     }, []);
+
+    const handleSpawnCard = () => {
+        console.log("heelo!");
+        const card = new Card("/assets/king.png");
+        CARDS.push(card.getMesh())
+        scene.add(card.getMesh())
+        handleCardHandUpdate()
+    }
+
+    const handleRemoveCardFromHand = () => {
+        console.log("heelo!");
+        const card = new Card("/assets/king.png");
+        CARDS.push(card.getMesh())
+        scene.add(card.getMesh())
+        handleCardHandUpdate()
+    }
+
+    const handleCardHandUpdate = () => {
+        const xCenter = 0; // Center position for the hand
+        const yBase = 6.8; // Base y position
+        const zBase = 4.21; // Base z position
+        const nrOfCards = CARDS.length;
+
+        const cardSpacing = 0.25 - (0.005 * nrOfCards); // Spacing between cards
+        const startX = xCenter - ((nrOfCards - 1) * cardSpacing) / 2; // Calculate the starting X position
+
+        CARDS.forEach((card, index) => {
+            const xPosition = startX + index * cardSpacing;
+            const yPosition = yBase + 0.01 * index; // Cards stay aligned in y
+            const zPosition = zBase + 0.01 * index; // Cards stay aligned in z
+
+            // card.position.set(xPosition, yPosition, zPosition);
+
+            const tl = new gsap.timeline({
+                defaults: { duration: 0.4, delay: 0.1 }
+            })
+
+            tl.to(card.position, {
+                x: xPosition,
+                y: yPosition,
+                z: zPosition
+            }, 0)
+        });
+
+
+
+    };
+
+    for (let i = 1; i < 5; i++) {
+        handleSpawnCard()
+    }
+
     return (
-        <div ref={refContainer}></div>
+        <>
+            <div ref={refContainer}></div>
+            <button className='absolute bottom-10 right-10 text-white p-2 bg-blue-600 rounded-lg' onClick={handleSpawnCard}>Test</button>
+        </>
     );
 }
 
