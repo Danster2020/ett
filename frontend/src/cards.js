@@ -1,38 +1,58 @@
 import {
-    MeshBasicMaterial,
-    BoxGeometry,
+    ShaderMaterial,
+    PlaneGeometry,
     Mesh,
-    SRGBColorSpace,
     TextureLoader,
     Vector3,
+    SRGBColorSpace,
 } from "three";
 
 class Card {
-    static cardGeometry = new BoxGeometry(0.4, 0.6, 0.001);
     static textureLoader = new TextureLoader();
-    static backTexture = Card.textureLoader.load("/assets/card_cover.png");
 
-    constructor(texturePath, position = [0, 0, 0], rotation = [-0.7, 0, 0], name = "playerCard") {
+    constructor(
+        backgroundTexturePath,
+        overlayTexturePath,
+        position = [0, 0, 0],
+        rotation = [-0.7, 0, 0],
+        name = "playerCard"
+    ) {
         // Load textures
-        const cardFrontTexture = Card.textureLoader.load(texturePath);
-        cardFrontTexture.colorSpace = SRGBColorSpace;
+        const backgroundTexture = Card.textureLoader.load(backgroundTexturePath);
+        backgroundTexture.colorSpace = SRGBColorSpace;
 
-        // Ensure the back texture also uses the correct color space
-        Card.backTexture.colorSpace = SRGBColorSpace;
+        const overlayTexture = Card.textureLoader.load(overlayTexturePath);
+        overlayTexture.colorSpace = SRGBColorSpace;
 
-        // Create materials
-        const materials = [
-            new MeshBasicMaterial(), // Left side
-            new MeshBasicMaterial(), // Right side
-            new MeshBasicMaterial(), // Top side
-            new MeshBasicMaterial(), // Bottom side
-            new MeshBasicMaterial({ map: cardFrontTexture }), // Front face
-            new MeshBasicMaterial({ map: Card.backTexture }), // Back face
-        ];
+        // Shader material
+        const material = new ShaderMaterial({
+            uniforms: {
+                backgroundTexture: { value: backgroundTexture },
+                overlayTexture: { value: overlayTexture },
+            },
+            vertexShader: `
+                varying vec2 vUv;
+                void main() {
+                    vUv = uv;
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                }
+            `,
+            fragmentShader: `
+                uniform sampler2D backgroundTexture;
+                uniform sampler2D overlayTexture;
+                varying vec2 vUv;
+                void main() {
+                    vec4 bgColor = texture2D(backgroundTexture, vUv);
+                    vec4 overlayColor = texture2D(overlayTexture, vUv);
+                    gl_FragColor = mix(bgColor, overlayColor, overlayColor.a);
+                }
+            `,
+            transparent: true,
+        });
 
-        // Create mesh
-        this.mesh = new Mesh(Card.cardGeometry, materials);
-        this.mesh.name = name;
+        // Create geometry and mesh
+        const geometry = new PlaneGeometry(0.4, 0.6);
+        this.mesh = new Mesh(geometry, material);
 
         // Set position and rotation
         if (position instanceof Vector3) {
@@ -47,25 +67,12 @@ class Card {
             this.mesh.rotation.set(...rotation);
         }
 
-        this.mesh.castShadow = true;
+        this.mesh.name = name;
     }
 
     getMesh() {
         return this.mesh;
     }
 }
-
-// Example usage
-// const CARDS = [];
-// const xVec = -0.25;
-// const yVec = 6.8;
-// const zVec = 4.21;
-
-// for (let i = 1; i < 5; i++) {
-//     const position = [xVec + i * 0.25, yVec + i * 0.01, zVec + i * 0.01];
-//     const rotation = [-0.7, 0, 0];
-//     const card = new Card("/assets/king.png", position, rotation);
-//     CARDS.push(card.getMesh());
-// }
 
 export { Card };
