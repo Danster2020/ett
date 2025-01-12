@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { useEffect, useRef, useState } from "react";
-import { Card } from './cards';
+import { Card, Color } from './cards';
 import gsap from "gsap";
 
 function Three() {
@@ -14,13 +14,17 @@ function Three() {
     const cardsOnTableRef = useRef([]);
     const [nrOfCardsInHand, setNrOfCardsInHand] = useState(0);
 
-    const spawnCard = () => {
-        const card = new Card("/assets/green_card.png", "/assets/card_nr_3.png");
+    const spawnCard = (color, number) => {
+        const card = new Card(color, number);
         const cardMesh = card.getMesh();
         cardsInHandRef.current.push(cardMesh);
         sceneRef.current.add(cardMesh);
         handleCardHandUpdate();
         setNrOfCardsInHand(cardsInHandRef.current.length);
+    };
+
+    const handleCardSpawnClick = () => {
+        spawnCard(Color.GREEN, 1);
     };
 
     const handleCardHandUpdate = () => {
@@ -146,7 +150,7 @@ function Three() {
         rendererRef.current.setAnimationLoop(animate);
 
         for (let i = 0; i < 5; i++) {
-            spawnCard();
+            spawnCard(Color.RED, 9);
         }
 
         return () => {
@@ -161,7 +165,7 @@ function Three() {
             <div className="absolute bottom-20 right-10 p-2">{nrOfCardsInHand}</div>
             <button
                 className="absolute bottom-10 right-10 text-white p-2 bg-blue-600 rounded-lg"
-                onClick={spawnCard}
+                onClick={handleCardSpawnClick}
             >
                 Add Card
             </button>

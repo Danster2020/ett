@@ -7,16 +7,56 @@ import {
     SRGBColorSpace,
 } from "three";
 
+const Color = {
+    RED: 1,
+    GREEN: 2,
+    BLUE: 3,
+    YELLOW: 4
+};
+
 class Card {
     static textureLoader = new TextureLoader();
 
     constructor(
-        backgroundTexturePath,
-        overlayTexturePath,
+        color,
+        number,
         position = [0, 0, 0],
         rotation = [-0.7, 0, 0],
         name = "playerCard"
     ) {
+
+        const assets_folder = "/assets/"
+
+        let backgroundTexturePath = assets_folder
+        switch (color) {
+            case Color.RED:
+                backgroundTexturePath += "red"
+                break;
+            case Color.GREEN:
+                backgroundTexturePath += "green"
+                break;
+            case Color.BLUE:
+                backgroundTexturePath += "blue"
+                break;
+            case Color.YELLOW:
+                backgroundTexturePath += "yellow"
+                break;
+            default:
+                backgroundTexturePath += "ERROR"
+                break;
+        }
+        backgroundTexturePath += "_card.png"
+        console.log("backgroundTexturePath", backgroundTexturePath);
+
+
+        let overlayTexturePath = assets_folder + "card_nr_" + number
+        switch (number) {
+            default:
+                overlayTexturePath + number
+        }
+        overlayTexturePath += ".png"
+        console.log("overlayTexturePath", overlayTexturePath);
+
         // Load textures
         const backgroundTexture = Card.textureLoader.load(backgroundTexturePath);
         backgroundTexture.colorSpace = SRGBColorSpace;
@@ -75,4 +115,4 @@ class Card {
     }
 }
 
-export { Card };
+export { Card, Color };
