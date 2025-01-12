@@ -150,7 +150,7 @@ function Three() {
         rendererRef.current.setAnimationLoop(animate);
 
         for (let i = 0; i < 5; i++) {
-            spawnCard(Color.RED, 9);
+            spawnCard(Color.YELLOW, i);
         }
 
         return () => {

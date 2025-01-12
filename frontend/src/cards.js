@@ -14,8 +14,31 @@ const Color = {
     YELLOW: 4
 };
 
+const assetsFolder = "/assets/"
+const colors = ["red", "green", "blue", "yellow"]
+const numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+const backgroundTextureArray = []
+const overlayTextureArray = []
+
+let backgroundTexture = ""
+let overlayTexture = ""
+
+// for each color
+colors.forEach(el => {
+    let texturePath = assetsFolder + "card_" + el + ".png"
+    console.log("texturePath", texturePath);
+    backgroundTextureArray.push(new TextureLoader().load(texturePath))
+});
+
+// for each number
+numbers.forEach(el => {
+    let texturePath = assetsFolder + "card_nr_" + el + ".png"
+    console.log("texturePath", texturePath);
+    overlayTextureArray.push(new TextureLoader().load(texturePath))
+});
+
 class Card {
-    static textureLoader = new TextureLoader();
 
     constructor(
         color,
@@ -25,43 +48,35 @@ class Card {
         name = "playerCard"
     ) {
 
-        const assets_folder = "/assets/"
+        console.log("color", color);
 
-        let backgroundTexturePath = assets_folder
         switch (color) {
             case Color.RED:
-                backgroundTexturePath += "red"
+                backgroundTexture = backgroundTextureArray[0]
                 break;
             case Color.GREEN:
-                backgroundTexturePath += "green"
+                backgroundTexture = backgroundTextureArray[1]
                 break;
             case Color.BLUE:
-                backgroundTexturePath += "blue"
+                backgroundTexture = backgroundTextureArray[2]
                 break;
             case Color.YELLOW:
-                backgroundTexturePath += "yellow"
+                backgroundTexture = backgroundTextureArray[3]
                 break;
             default:
-                backgroundTexturePath += "ERROR"
+                backgroundTexture += "ERROR"
                 break;
         }
-        backgroundTexturePath += "_card.png"
-        console.log("backgroundTexturePath", backgroundTexturePath);
 
+        console.log("number", number);
 
-        let overlayTexturePath = assets_folder + "card_nr_" + number
         switch (number) {
             default:
-                overlayTexturePath + number
+                overlayTexture = overlayTextureArray[number]
+                break;
         }
-        overlayTexturePath += ".png"
-        console.log("overlayTexturePath", overlayTexturePath);
 
-        // Load textures
-        const backgroundTexture = Card.textureLoader.load(backgroundTexturePath);
         backgroundTexture.colorSpace = SRGBColorSpace;
-
-        const overlayTexture = Card.textureLoader.load(overlayTexturePath);
         overlayTexture.colorSpace = SRGBColorSpace;
 
         // Shader material
