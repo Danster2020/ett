@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { Card, Color } from './cards';
 import gsap from "gsap";
 
-function Three() {
+function Three({ playerData }) {
     const refContainer = useRef(null);
     const sceneRef = useRef(new THREE.Scene());
     const rendererRef = useRef(null);
@@ -149,15 +149,35 @@ function Three() {
         };
         rendererRef.current.setAnimationLoop(animate);
 
-        for (let i = 0; i < 5; i++) {
-            spawnCard(Color.YELLOW, i);
-        }
+        // for (let i = 0; i < 5; i++) {
+        //     spawnCard(Color.YELLOW, i);
+        // }
+
+        // if (playerData) {
+        //     playerData.cardsInHand.forEach(card => {
+        //         spawnCard(Color.YELLOW, card.number);
+        //     });
+        // }
 
         return () => {
             window.removeEventListener("click", handleClick);
             rendererRef.current.dispose();
         };
     }, []);
+
+    // Effect to monitor changes in playerData and spawn new cards
+    useEffect(() => {
+        if (playerData) {
+            const existingCardNumbers = cardsInHandRef.current.map((card) => card.userData.number);
+            const newCards = playerData.cardsInHand.filter(
+                (card) => !existingCardNumbers.includes(card.number)
+            );
+
+            newCards.forEach((card) => {
+                spawnCard(Color.YELLOW, card.number);
+            });
+        }
+    }, [playerData]);
 
     return (
         <>
