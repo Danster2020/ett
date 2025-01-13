@@ -7,12 +7,12 @@ import {
     SRGBColorSpace,
 } from "three";
 
-const Color = {
-    RED: 1,
-    GREEN: 2,
-    BLUE: 3,
-    YELLOW: 4
-};
+// const Color = {
+//     RED: 1,
+//     GREEN: 2,
+//     BLUE: 3,
+//     YELLOW: 4
+// };
 
 const assetsFolder = "/assets/"
 const colors = ["red", "green", "blue", "yellow"]
@@ -51,16 +51,16 @@ class Card {
         console.log("color", color);
 
         switch (color) {
-            case Color.RED:
+            case "red":
                 backgroundTexture = backgroundTextureArray[0]
                 break;
-            case Color.GREEN:
+            case "green":
                 backgroundTexture = backgroundTextureArray[1]
                 break;
-            case Color.BLUE:
+            case "blue":
                 backgroundTexture = backgroundTextureArray[2]
                 break;
-            case Color.YELLOW:
+            case "yellow":
                 backgroundTexture = backgroundTextureArray[3]
                 break;
             default:
@@ -130,4 +130,4 @@ class Card {
     }
 }
 
-export { Card, Color };
+export { Card };

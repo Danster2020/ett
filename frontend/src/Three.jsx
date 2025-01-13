@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { useEffect, useRef, useState } from "react";
-import { Card, Color } from './cards';
+import { Card } from './cards';
 import gsap from "gsap";
 
 function Three({ playerData }) {
@@ -24,7 +24,7 @@ function Three({ playerData }) {
     };
 
     const handleCardSpawnClick = () => {
-        spawnCard(Color.GREEN, 1);
+        spawnCard("green", 1);
     };
 
     const handleCardHandUpdate = () => {
@@ -149,16 +149,6 @@ function Three({ playerData }) {
         };
         rendererRef.current.setAnimationLoop(animate);
 
-        // for (let i = 0; i < 5; i++) {
-        //     spawnCard(Color.YELLOW, i);
-        // }
-
-        // if (playerData) {
-        //     playerData.cardsInHand.forEach(card => {
-        //         spawnCard(Color.YELLOW, card.number);
-        //     });
-        // }
-
         return () => {
             window.removeEventListener("click", handleClick);
             rendererRef.current.dispose();
@@ -174,7 +164,7 @@ function Three({ playerData }) {
             );
 
             newCards.forEach((card) => {
-                spawnCard(Color.YELLOW, card.number);
+                spawnCard(card.color, card.number);
             });
         }
     }, [playerData]);
