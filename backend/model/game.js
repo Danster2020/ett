@@ -22,6 +22,17 @@ class Game {
         this.name = name
     }
 
+    playerExists(playerId) {
+        return this.players.some(player => {
+            return player.id === playerId;
+        });
+    }
+
+    getPlayer(playerId) {
+        return this.players.find(player => player.id === playerId);
+    }
+
+
     addPlayer(player) {
         this.players.push(player)
     }

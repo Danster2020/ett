@@ -103,7 +103,7 @@ function Three({ playerData }) {
             if (intersects.length > 0) {
                 const selectedCard = intersects[0].object;
 
-                console.log("cardsInHandRef.current.length", cardsOnTableRef.current.length);
+                // console.log("cardsInHandRef.current.length", cardsOnTableRef.current.length);
 
 
                 // Animate the card to the table
@@ -167,12 +167,16 @@ function Three({ playerData }) {
                 spawnCard(card.color, card.number);
             });
         }
+
+
     }, [playerData]);
 
     return (
         <>
             <div ref={refContainer}></div>
-            <div className="absolute bottom-20 right-10 p-2">{nrOfCardsInHand}</div>
+            <div className="absolute bottom-20 right-10 p-2">
+                <div>{nrOfCardsInHand}</div>
+            </div>
             <button
                 className="absolute bottom-10 right-10 text-white p-2 bg-blue-600 rounded-lg"
                 onClick={handleCardSpawnClick}

@@ -7,13 +7,6 @@ import {
     SRGBColorSpace,
 } from "three";
 
-// const Color = {
-//     RED: 1,
-//     GREEN: 2,
-//     BLUE: 3,
-//     YELLOW: 4
-// };
-
 const assetsFolder = "/assets/"
 const colors = ["red", "green", "blue", "yellow"]
 const numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
@@ -27,14 +20,14 @@ let overlayTexture = ""
 // for each color
 colors.forEach(el => {
     let texturePath = assetsFolder + "card_" + el + ".png"
-    console.log("texturePath", texturePath);
+    // console.log("texturePath", texturePath);
     backgroundTextureArray.push(new TextureLoader().load(texturePath))
 });
 
 // for each number
 numbers.forEach(el => {
     let texturePath = assetsFolder + "card_nr_" + el + ".png"
-    console.log("texturePath", texturePath);
+    // console.log("texturePath", texturePath);
     overlayTextureArray.push(new TextureLoader().load(texturePath))
 });
 

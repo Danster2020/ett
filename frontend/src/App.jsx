@@ -1,22 +1,65 @@
 import { useState, useEffect } from 'react'
 import io from "socket.io-client"
 import Three from './Three'
+import { v4 as uuidv4 } from 'uuid';
 
 const socket = io.connect("http://localhost:3001")
 
+function getCookie(cname) {
+  let name = cname + "=";
+  let decodedCookie = decodeURIComponent(document.cookie);
+  let ca = decodedCookie.split(';');
+  for (let i = 0; i < ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return null;
+}
+
+if (!getCookie("user_id")) {
+  document.cookie = `user_id=${uuidv4()};`
+  console.log("cookie created!");
+} else {
+  console.log("cookie exists.");
+}
+
+const user_id = getCookie("user_id")
+
 function App() {
   const [playerData, setPlayerData] = useState()
-
-  const sendMessage = () => {
-    socket.emit("")
-  }
+  const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
-    socket.on("playerData", (data) => {
-      console.log("playerData", data);
-      setPlayerData(data)
-    })
-  }, [socket])
+
+    function onConnect() {
+      setIsConnected(true);
+      socket.emit("playerID", user_id)
+      console.log("emitted user_id", user_id);
+
+      socket.on("playerData", (data) => {
+        console.log("playerData", data);
+        setPlayerData(data)
+      })
+    }
+
+    function onDisconnect() {
+      setIsConnected(false);
+    }
+
+    socket.on('connect', onConnect);
+    socket.on('disconnect', onDisconnect);
+
+    return () => {
+      socket.off('connect', onConnect);
+      socket.off('disconnect', onDisconnect);
+    };
+
+  }, [])
 
 
   return (
