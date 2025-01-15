@@ -11,6 +11,10 @@ class Player {
     addCard(card) {
         this.cardsInHand.push(card)
     }
+
+    getPublicInfo() {
+        return { name: this.name, nrOfCardsInHand: this.cardsInHand.length }
+    }
 }
 
 module.exports = Player

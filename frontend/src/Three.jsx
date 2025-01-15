@@ -5,17 +5,19 @@ import { useEffect, useRef, useState } from "react";
 import { Card } from './cards';
 import gsap from "gsap";
 
-function Three({ playerData }) {
+function Three({ playerData, onCardSelect }) {
     const refContainer = useRef(null);
     const sceneRef = useRef(new THREE.Scene());
     const rendererRef = useRef(null);
     const cameraRef = useRef(null);
     const cardsInHandRef = useRef([]);
     const cardsOnTableRef = useRef([]);
-    const [nrOfCardsInHand, setNrOfCardsInHand] = useState(0);
 
-    const spawnCard = (color, number) => {
-        const card = new Card(color, number);
+    const [nrOfCardsInHand, setNrOfCardsInHand] = useState(0);
+    const [clickedCard, setClickedCard] = useState();
+
+    const spawnCard = (id, color, number) => {
+        const card = new Card(id, color, number);
         const cardMesh = card.getMesh();
         cardsInHandRef.current.push(cardMesh);
         sceneRef.current.add(cardMesh);
@@ -24,7 +26,7 @@ function Three({ playerData }) {
     };
 
     const handleCardSpawnClick = () => {
-        spawnCard("green", 1);
+        spawnCard(0, "green", 1);
     };
 
     const handleCardHandUpdate = () => {
@@ -87,7 +89,6 @@ function Three({ playerData }) {
 
         const raycaster = new THREE.Raycaster();
         const mouse = new THREE.Vector2();
-        let hoveredCard = null;
 
         // Sets orbit control to move the camera around.
         // const orbit = new OrbitControls(cameraRef.current, rendererRef.current.domElement);
@@ -102,6 +103,17 @@ function Three({ playerData }) {
 
             if (intersects.length > 0) {
                 const selectedCard = intersects[0].object;
+
+                // setClickedCard(selectedCard)
+                console.log("selectedCard", selectedCard);
+
+                // Notify parent component
+                if (onCardSelect) {
+                    console.log("ASDASD", selectedCard.userData);
+
+                    onCardSelect(selectedCard.userData);
+                }
+
 
                 // console.log("cardsInHandRef.current.length", cardsOnTableRef.current.length);
 
@@ -164,7 +176,7 @@ function Three({ playerData }) {
             );
 
             newCards.forEach((card) => {
-                spawnCard(card.color, card.number);
+                spawnCard(card.id, card.color, card.number);
             });
         }
 

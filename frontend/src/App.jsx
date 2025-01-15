@@ -33,6 +33,19 @@ const user_id = getCookie("user_id")
 function App() {
   const [playerData, setPlayerData] = useState()
   const [isConnected, setIsConnected] = useState(false);
+  const [selectedCard, setSelectedCard] = useState(null);
+
+  const handleCardSelect = (card) => {
+    setSelectedCard(card);
+    console.log("Card selected in App:", card);
+
+    if (card) {
+      console.log("sent played card.");
+      socket.emit("playedCard", { playerId: user_id, cardId: card.id })
+    }
+  };
+
+
 
   useEffect(() => {
 
@@ -45,14 +58,23 @@ function App() {
         console.log("playerData", data);
         setPlayerData(data)
       })
+
+      console.log("requesting game info...");
+      socket.emit("getGameInfo")
     }
 
     function onDisconnect() {
       setIsConnected(false);
     }
 
+    function onGameInfo(data) {
+      console.log("received game info.");
+      console.log("gameInfo", data);
+    }
+
     socket.on('connect', onConnect);
     socket.on('disconnect', onDisconnect);
+    socket.on('gameInfo', onGameInfo);
 
     return () => {
       socket.off('connect', onConnect);
@@ -61,10 +83,16 @@ function App() {
 
   }, [])
 
+  // useEffect(() => {
+  //   if (selectedCard) {
+  //     socket.emit("playedCard", { playerId: user_id, cardId: selectedCard.id })
+  //   }
+  // }, [selectedCard])
+
 
   return (
     <>
-      <Three playerData={playerData}></Three>
+      <Three playerData={playerData} onCardSelect={handleCardSelect}></Three>
     </>
   )
 }

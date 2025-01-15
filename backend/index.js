@@ -54,8 +54,6 @@ io.on("connection", (socket) => {
 
         if (game.playerExists(playerId)) {
             console.log("Player " + playerId + " already exists.");
-            console.log("game.getPlayer(playerId)", game.getPlayer(playerId));
-
             socket.emit("playerData", game.getPlayer(playerId))
             return
         }
@@ -70,7 +68,25 @@ io.on("connection", (socket) => {
         socket.emit("playerData", newPlayer)
         console.log("Player " + playerId + " added!");
     })
+
+    socket.on("getGameInfo", () => {
+        console.log("sending game info.");
+        socket.emit("gameInfo", game.getPublicInfo())
+    })
+
+    socket.on("playedCard", (data) => {
+        console.log("received played card", data);
+
+        const player = game.getPlayer(data.playerId)
+        const cardId = data.cardId
+
+        const card = player.cardsInHand.find(card => card.id === cardId);
+        game.addCard(card)
+        socket.emit("gameInfo", game.getPublicInfo())
+    })
 })
+
+
 
 
 

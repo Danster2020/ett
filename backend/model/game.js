@@ -32,9 +32,20 @@ class Game {
         return this.players.find(player => player.id === playerId);
     }
 
-
     addPlayer(player) {
         this.players.push(player)
+    }
+
+    addCard(card) {
+        this.cardsOnTable.push(card)
+    }
+
+    getPublicInfo() {
+        const playersPublicInfo = []
+        this.players.forEach(player => {
+            playersPublicInfo.push(player.getPublicInfo())
+        });
+        return { id: this.id, phase: this.phase, turnDir: this.turnDir, players: playersPublicInfo, currentPlayer: this.currentPlayer, cardsOnTable: this.cardsOnTable }
     }
 }
 

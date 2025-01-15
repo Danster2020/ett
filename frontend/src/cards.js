@@ -34,6 +34,7 @@ numbers.forEach(el => {
 class Card {
 
     constructor(
+        id,
         color,
         number,
         position = [0, 0, 0],
@@ -101,6 +102,9 @@ class Card {
         // Create geometry and mesh
         const geometry = new PlaneGeometry(0.4, 0.6);
         this.mesh = new Mesh(geometry, material);
+        this.mesh.userData.id = id
+        this.mesh.userData.color = color
+        this.mesh.userData.number = number
 
         // Set position and rotation
         if (position instanceof Vector3) {
