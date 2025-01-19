@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { Card } from './cards';
 import gsap from "gsap";
 
-function Three({ playerData, onCardSelect }) {
+function Three({ playerData, gameInfo, onCardSelect }) {
     const refContainer = useRef(null);
     const sceneRef = useRef(new THREE.Scene());
     const rendererRef = useRef(null);
@@ -23,6 +23,38 @@ function Three({ playerData, onCardSelect }) {
         sceneRef.current.add(cardMesh);
         handleCardHandUpdate();
         setNrOfCardsInHand(cardsInHandRef.current.length);
+    };
+
+    const spawnCardOnTable = (id, color, number) => {
+        const card = new Card(id, color, number);
+        const cardMesh = card.getMesh();
+
+        cardsOnTableRef.current.push(cardMesh);
+        sceneRef.current.add(cardMesh);
+
+
+        const tl = gsap.timeline({
+            defaults: { duration: 0.4, delay: 0.1 },
+        });
+        tl.to(cardMesh.position, {
+            x: 0,
+            y: 3.22 + cardsOnTableRef.current.length * 0.001,
+            z: 0
+        }, 0)
+            .to(cardMesh.rotation, {
+                x: -Math.PI / 2,
+                y: 0,
+                z: Math.random()
+            }, 0)
+            .to(cardMesh.scale, {
+                x: 1.5,
+                y: 1.5,
+                z: 1.5
+            }, 0)
+
+        // handleCardHandUpdate();
+        // setNrOfCardsInHand(cardsInHandRef.current.length);
+
     };
 
     const handleCardSpawnClick = () => {
@@ -91,8 +123,8 @@ function Three({ playerData, onCardSelect }) {
         const mouse = new THREE.Vector2();
 
         // Sets orbit control to move the camera around.
-        // const orbit = new OrbitControls(cameraRef.current, rendererRef.current.domElement);
-        // orbit.update();
+        const orbit = new OrbitControls(cameraRef.current, rendererRef.current.domElement);
+        orbit.update();
 
         const handleClick = (event) => {
             mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -109,10 +141,11 @@ function Three({ playerData, onCardSelect }) {
 
                 // Notify parent component
                 if (onCardSelect) {
-                    console.log("ASDASD", selectedCard.userData);
-
                     onCardSelect(selectedCard.userData);
                 }
+
+                console.log("DEBUG", cardsOnTableRef.current.length);
+
 
 
                 // console.log("cardsInHandRef.current.length", cardsOnTableRef.current.length);
@@ -124,7 +157,7 @@ function Three({ playerData, onCardSelect }) {
                 });
                 tl.to(selectedCard.position, {
                     x: 0,
-                    y: 3.22 + cardsOnTableRef.current.length * 0.001,
+                    y: 3.22 + (cardsOnTableRef.current.length * 0.001) + 0.001,
                     z: 0
                 }, 0)
                     .to(selectedCard.rotation, {
@@ -170,18 +203,29 @@ function Three({ playerData, onCardSelect }) {
     // Effect to monitor changes in playerData and spawn new cards
     useEffect(() => {
         if (playerData) {
-            const existingCardNumbers = cardsInHandRef.current.map((card) => card.userData.number);
+            const existingCardNumbers = cardsInHandRef.current.map((card) => card.userData.id);
             const newCards = playerData.cardsInHand.filter(
-                (card) => !existingCardNumbers.includes(card.number)
+                (card) => !existingCardNumbers.includes(card.id)
             );
 
             newCards.forEach((card) => {
                 spawnCard(card.id, card.color, card.number);
             });
         }
-
-
     }, [playerData]);
+
+    useEffect(() => {
+        if (gameInfo && gameInfo.cardsOnTable.length > 0) {
+            const existingCards = cardsOnTableRef.current.map((card) => card.userData?.id);
+            const newCards = gameInfo.cardsOnTable.filter(
+                (card) => !existingCards.includes(card.id)
+            );
+
+            newCards.forEach((card) => {
+                spawnCardOnTable(card.id, card.color, card.number);
+            });
+        }
+    }, [gameInfo]);
 
     return (
         <>

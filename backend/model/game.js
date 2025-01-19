@@ -1,3 +1,5 @@
+const Card = require("./card")
+
 const Phase = {
     Setup: 0,
     Play: 1,
@@ -20,6 +22,8 @@ class Game {
     constructor(id, name) {
         this.id = id
         this.name = name
+
+        this.cardsOnTable.push(new Card())
     }
 
     playerExists(playerId) {
@@ -46,6 +50,13 @@ class Game {
             playersPublicInfo.push(player.getPublicInfo())
         });
         return { id: this.id, phase: this.phase, turnDir: this.turnDir, players: playersPublicInfo, currentPlayer: this.currentPlayer, cardsOnTable: this.cardsOnTable }
+    }
+
+    isLegalAction(action, data) {
+        if (action == "PlayCard") {
+            const card = data
+
+        }
     }
 }
 

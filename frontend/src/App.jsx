@@ -32,6 +32,7 @@ const user_id = getCookie("user_id")
 
 function App() {
   const [playerData, setPlayerData] = useState()
+  const [gameInfo, setGameInfo] = useState()
   const [isConnected, setIsConnected] = useState(false);
   const [selectedCard, setSelectedCard] = useState(null);
 
@@ -68,8 +69,8 @@ function App() {
     }
 
     function onGameInfo(data) {
-      console.log("received game info.");
       console.log("gameInfo", data);
+      setGameInfo(data)
     }
 
     socket.on('connect', onConnect);
@@ -92,7 +93,7 @@ function App() {
 
   return (
     <>
-      <Three playerData={playerData} onCardSelect={handleCardSelect}></Three>
+      <Three playerData={playerData} gameInfo={gameInfo} onCardSelect={handleCardSelect}></Three>
     </>
   )
 }

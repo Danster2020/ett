@@ -42,7 +42,7 @@ class Card {
         name = "playerCard"
     ) {
 
-        console.log("color", color);
+        // console.log("color", color);
 
         switch (color) {
             case "red":
@@ -62,7 +62,7 @@ class Card {
                 break;
         }
 
-        console.log("number", number);
+        // console.log("number", number);
 
         switch (number) {
             default:
