@@ -42,7 +42,7 @@ function App() {
 
     if (card) {
       console.log("sent played card.");
-      socket.emit("playedCard", { playerId: user_id, cardId: card.id })
+      socket.emit("playCard", { playerId: user_id, cardId: card.id })
     }
   };
 
@@ -83,13 +83,6 @@ function App() {
     };
 
   }, [])
-
-  // useEffect(() => {
-  //   if (selectedCard) {
-  //     socket.emit("playedCard", { playerId: user_id, cardId: selectedCard.id })
-  //   }
-  // }, [selectedCard])
-
 
   return (
     <>

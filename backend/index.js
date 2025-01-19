@@ -60,7 +60,7 @@ io.on("connection", (socket) => {
 
         const newPlayer = new Player(playerId, "")
         // give new player cards
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < 10; i++) {
             newPlayer.addCard(new Card("yellow", i))
         }
 
@@ -74,14 +74,22 @@ io.on("connection", (socket) => {
         socket.emit("gameInfo", game.getPublicInfo())
     })
 
-    socket.on("playedCard", (data) => {
+    socket.on("playCard", (data) => {
         console.log("received played card", data);
+
+        if (!game.isLegalAction("playCard", data)) {
+            console.log("Can't legally play card!");
+            return
+        }
 
         const player = game.getPlayer(data.playerId)
         const cardId = data.cardId
 
-        const card = player.cardsInHand.find(card => card.id === cardId);
+        game.isLegalAction("playCard", data)
+
+        const card = player.getCard(cardId);
         game.addCard(card)
+        player.removeCard(cardId)
         socket.emit("gameInfo", game.getPublicInfo())
     })
 })

@@ -123,8 +123,8 @@ function Three({ playerData, gameInfo, onCardSelect }) {
         const mouse = new THREE.Vector2();
 
         // Sets orbit control to move the camera around.
-        const orbit = new OrbitControls(cameraRef.current, rendererRef.current.domElement);
-        orbit.update();
+        // const orbit = new OrbitControls(cameraRef.current, rendererRef.current.domElement);
+        // orbit.update();
 
         const handleClick = (event) => {
             mouse.x = (event.clientX / window.innerWidth) * 2 - 1;

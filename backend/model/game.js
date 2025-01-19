@@ -1,4 +1,5 @@
 const Card = require("./card")
+const Player = require("./player")
 
 const Phase = {
     Setup: 0,
@@ -41,7 +42,15 @@ class Game {
     }
 
     addCard(card) {
+        if (card == null) {
+            console.error("Can't add null card!");
+            return
+        }
         this.cardsOnTable.push(card)
+    }
+
+    getCurrentCard() {
+        return this.cardsOnTable.at(-1);
     }
 
     getPublicInfo() {
@@ -53,10 +62,31 @@ class Game {
     }
 
     isLegalAction(action, data) {
-        if (action == "PlayCard") {
-            const card = data
 
+        if (action === "playCard") {
+            const player = this.getPlayer(data.playerId)
+            const playedCard = player.getCard(data.cardId)
+
+            console.log("currentCard", this.getCurrentCard());
+
+
+            console.log("current color", this.getCurrentCard().color);
+            console.log("current number", this.getCurrentCard().number);
+
+            console.log("played color", playedCard.color);
+            console.log("played number", playedCard.number);
+
+
+            if (this.getCurrentCard().color === playedCard.color) {
+                return true
+            }
+
+            if (this.getCurrentCard().number === playedCard.number) {
+                return true
+            }
         }
+
+        return false
     }
 }
 
